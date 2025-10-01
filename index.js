@@ -25,7 +25,7 @@ app.use(cors({
   origin: ['https://localhost:5173', 'http://localhost:5173', 'http://localhost:5174'],
 }));
 
-app.get('/public', (req, res) => res.send('This is publicly accessible.'));
+app.get('/public', (req, res) => res.send('This is a public endpoint accessible to everyone.'));
 
 app.use(jwt({
   // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
