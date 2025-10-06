@@ -9,14 +9,6 @@ if (!stripeSecretKey) {
 }
 const stripe = require('stripe')(stripeSecretKey);
 
-const stripeSuccessUrl =
-  envVariables.stripeSuccessUrl ||
-  process.env.STRIPE_SUCCESS_URL ||
-  'finanz-navigator://auth/success';
-const stripeCancelUrl =
-  envVariables.stripeCancelUrl ||
-  process.env.STRIPE_CANCEL_URL ||
-  'finanz-navigator://auth/cancel';
 
 const app = express();
 
@@ -26,6 +18,11 @@ app.use(cors({
 }));
 
 app.get('/public', (req, res) => res.send('This is a public endpoint accessible to everyone.'));
+
+app.get('/auth/success', (req, res) => {
+  // Redirect zur App mit Custom Scheme
+  res.redirect("finanz-navigator://auth/success");
+});
 
 app.use(jwt({
   // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
@@ -51,8 +48,8 @@ app.post('/stripe', async (req, res) => {
     const stripeCustomerId = req.auth['http://localhost:3000/stripe_customer_id'];
 
     const session = await stripe.checkout.sessions.create({
-      success_url: stripeSuccessUrl,
-      cancel_url: stripeCancelUrl,
+      success_url: "https://api.fina4you.de/auth/success",
+      cancel_url: "https://api.fina4you.de/auth/success",
       payment_method_types: ["card"],
       customer: stripeCustomerId,
       line_items: [
